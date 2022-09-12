@@ -6,12 +6,6 @@ puppeteer.use(StealthPlugin());
 const fs = require("fs/promises");
 const { response } = require("express");
 
-function delay(time) {
-  return new Promise(function (resolve) {
-    setTimeout(resolve, time);
-  });
-}
-
 async function main() {
   try {
     const browser = await puppeteer.launch({
