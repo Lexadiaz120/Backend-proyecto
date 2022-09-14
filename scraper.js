@@ -3,6 +3,7 @@ const puppeteer = require("puppeteer-extra");
 const StealthPlugin = require("puppeteer-extra-plugin-stealth");
 puppeteer.use(StealthPlugin());
 function run() {
+  const list = [];
   return new Promise(async (resolve, reject) => {
     try {
       const browser = await puppeteer.launch({
@@ -16,7 +17,6 @@ function run() {
       await page.goto("https://openwebinars.net/buscador/?s=frontend", {
         waitUntil: "networkidle2",
       });
-      let list = [];
       await page.waitForSelector(".list-unstyled");
       const cursos = await page.$(".list-unstyled");
       await page.waitForSelector(".pagination");
@@ -37,7 +37,6 @@ function run() {
       console.log(resultsvalues);
       const cursitos = await cursos.evaluate((node) => {
         let cursos = node.querySelectorAll(".mb-3");
-        const list = [];
         for (const curso of cursos) {
           list.push({
             description: curso.querySelector("p").textContent,
@@ -46,8 +45,8 @@ function run() {
         }
         return list;
       });
-      list = list.concat(cursitos);
       console.log(list);
+      console.log(cursitos);
       while (currentPage <= pagesToScrape) {
         if (currentPage < pagesToScrape) {
           for (linktogo of resultsvalues) {
@@ -58,25 +57,25 @@ function run() {
                 waitUntil: "networkidle2",
               }
             );
-            await page.waitForSelector(".list-unstyledffwe");
-            let cursitos = await page.$(".list-unstyledffwe");
-            console.log(cursitos, "cursitos");
-            let cursos = await cursitos.evaluate((node) => {
-              // for (let curso of cursos) {
-              //   list.push({
-              //     description: curso.querySelector("p").textContent,
-              //     title: curso.querySelector(".card-title").textContent,
-              //   });
-              //   return list;
-              // }
+            await page.waitForSelector(".list-unstyled");
+            let curslist = await page.$(".list-unstyled");
+            let cursosTwo = await curslist.evaluate((node) => {
               let cursos = node.querySelectorAll(".mb-3");
               console.log(cursos);
+              for (let curso of cursos) {
+                list.push({
+                  description: curso.querySelector("p").textContent,
+                  title: curso.querySelector(".card-title").textContent,
+                });
+                return list;
+              }
+              list = list.concat(cursosTwo);
+              console.log(list);
             });
-            list = list.concat(cursos);
-            console.log(cursos);
           }
         }
         currentPage++;
+        console.log(list);
       }
     } catch (e) {
       return reject(e);
