@@ -1,9 +1,5 @@
 const { link } = require("fs");
 const puppeteer = require("puppeteer");
-
-//Falta seguir para poder iterrar más de 1 una página
-//En este ejemplo necesitamos reccorrer más de una web
-
 function run() {
   return new Promise(async (resolve, reject) => {
     try {
@@ -46,6 +42,11 @@ function run() {
       });
       list = list.concat(cursitos);
       console.log(list);
+      for (linktogo of resultsvalues) {
+        await page.waitForSelector(".list-unstyled");
+        let base = "https://openwebinars.net";
+        await page.goto(base + linktogo.url);
+      }
     } catch (e) {
       return reject(e);
     }
